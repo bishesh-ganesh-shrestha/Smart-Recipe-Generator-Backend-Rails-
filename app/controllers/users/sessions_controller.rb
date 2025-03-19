@@ -3,10 +3,19 @@
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
   before_action :configure_sign_in_params, only: [ :create ]
+  before_action :authenticate_user!, only: [:show]
 
   def index
     @users = User.all
     render json: @users
+  end
+
+  def show
+    render json: {
+      status: 200,
+      message: "User fetched successfully.",
+      data: UserSerializer.new(current_user).serializable_hash[:data][:attributes]
+    }, status: :ok
   end
 
   # GET /resource/sign_in

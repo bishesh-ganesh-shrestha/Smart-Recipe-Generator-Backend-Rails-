@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     get "users", to: "users/sessions#index"
+    get "users/me", to: "users/sessions#show"
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
