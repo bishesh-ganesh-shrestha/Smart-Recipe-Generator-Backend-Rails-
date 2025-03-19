@@ -16,6 +16,18 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
+    user = User.find_by(email: params[:session][:user][:email])
+
+    if user.blank?
+      return render json: {
+          status: { message: "This email is not registered." }
+        }, status: :unprocessable_entity
+    elsif user.present? && !user.valid_password?(params[:session][:user][:password])
+      return render json: {
+          status: { message: "Incorrect Password." }
+        }, status: :unprocessable_entity
+    end
+
     super
   end
 
