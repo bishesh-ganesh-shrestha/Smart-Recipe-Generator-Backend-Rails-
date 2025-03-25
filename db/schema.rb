@@ -17,7 +17,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_25_102132) do
     t.json "directions", default: [], null: false
     t.string "link"
     t.string "source"
-    t.json "ner", default: []
+    t.json "NER", default: []
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["source"], name: "index_recipes_on_source"
