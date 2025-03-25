@@ -12,15 +12,13 @@
 
 ActiveRecord::Schema[8.0].define(version: 2025_03_25_102132) do
   create_table "recipes", force: :cascade do |t|
-    t.string "title", null: false
+    t.string "title"
     t.json "ingredients", default: [], null: false
-    t.json "directions", default: [], null: false
-    t.string "link"
-    t.string "source"
-    t.json "NER", default: []
+    t.json "instructions", default: [], null: false
+    t.string "image_name"
+    t.json "cleaned_ingredients", default: []
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["source"], name: "index_recipes_on_source"
     t.index ["title"], name: "index_recipes_on_title"
   end
 
