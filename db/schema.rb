@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_15_180146) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_25_102132) do
+  create_table "recipes", force: :cascade do |t|
+    t.string "title", null: false
+    t.json "ingredients", default: [], null: false
+    t.json "directions", default: [], null: false
+    t.string "link"
+    t.string "source"
+    t.json "ner", default: []
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source"], name: "index_recipes_on_source"
+    t.index ["title"], name: "index_recipes_on_title"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
