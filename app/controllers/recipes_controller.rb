@@ -2,21 +2,15 @@ class RecipesController < ApplicationController
   before_action :authenticate_user!, only: []
 
   def index
+    recipe_contents = []
     recipes = Recipe.includes(:picture).limit(params[:limit]).offset(params[:offset]).map do |recipe|
-      {
-        id: recipe.id,
-        title: recipe.title,
-        ingredients: recipe.ingredients,
-        cleaned_ingredients: recipe.cleaned_ingredients,
-        picture_url: picture_url(recipe)
-      }
+      recipe_contents << recipe.recipe_content
     end
-    render json: recipes
+    render json: recipe_contents
   end
 
-  private
-
-  def picture_url(recipe)
-    recipe.picture&.image&.attached? ? url_for(recipe.picture.image) : nil
+  def show
+    recipe = Recipe.find_by(id: params[:id])
+    render json: recipe.recipe_content
   end
 end
