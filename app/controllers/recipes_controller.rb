@@ -8,9 +8,15 @@ class RecipesController < ApplicationController
         title: recipe.title,
         ingredients: recipe.ingredients,
         cleaned_ingredients: recipe.cleaned_ingredients,
-        picture_url: recipe.picture&.image&.attached? ? url_for(recipe.picture.image) : nil
+        picture_url: picture_url
       }
     end
     render json: recipes
+  end
+
+  private
+
+  def picture_url
+    recipe.picture&.image&.attached? ? url_for(recipe.picture.image) : nil
   end
 end
