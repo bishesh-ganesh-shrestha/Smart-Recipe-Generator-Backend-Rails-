@@ -2,6 +2,8 @@ class Recipe < ApplicationRecord
   include Rails.application.routes.url_helpers
 
   has_one :picture, as: :imageable, dependent: :destroy
+  has_many :recipe_ingredients
+  has_many :ingredients, through: :recipe_ingredients
 
   def recipe_content
     {
