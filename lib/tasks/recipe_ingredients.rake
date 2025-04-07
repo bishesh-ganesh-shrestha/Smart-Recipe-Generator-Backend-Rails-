@@ -14,7 +14,8 @@ namespace :import do
           end
 
           if ing.downcase.include?(ingredient_name.downcase)
-            RecipeIngredient.find_or_create_by!(recipe_id: recipe.id, ingredient_id: ingredient.id)
+            recipe_ingredient = RecipeIngredient.find_or_create_by!(recipe_id: recipe.id, ingredient_id: ingredient.id)
+            puts "RecipeIngredient created for Recipe ID: #{recipe.id} and Ingredient ID: #{ingredient.id}" if recipe_ingredient
           end
         end
       end
