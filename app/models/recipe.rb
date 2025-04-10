@@ -9,7 +9,7 @@ class Recipe < ApplicationRecord
     {
       id: id,
       title: title,
-      ingredients: ingredients,
+      ingredients: ingredients.map { |ingredient| { name: ingredient.name, category: ingredient.ingredient_category } },
       instructions: instructions,
       cleaned_ingredients: cleaned_ingredients,
       picture_url: picture_url
