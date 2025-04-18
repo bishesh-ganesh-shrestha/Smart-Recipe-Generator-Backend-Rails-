@@ -14,7 +14,11 @@ Rails.application.routes.draw do
     get "users/me", to: "users/sessions#show"
   end
 
-  resources :recipes
+  resources :recipes do
+    collection do
+      get "generate_recipes", to: "recipes#generate_recipes"
+    end
+  end
   resources :ingredients
   resources :pantry_ingredients do
     collection do
