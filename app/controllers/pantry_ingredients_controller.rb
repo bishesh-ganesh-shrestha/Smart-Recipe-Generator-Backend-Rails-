@@ -3,13 +3,19 @@ class PantryIngredientsController < ApplicationController
 
   def create
     if current_user
+      pantry_ingredients = []
       ingredients_params.each do |ingredient_id|
         ingredient = Ingredient.find_by(id: ingredient_id)
         next if ingredient.nil? || PantryIngredient.find_by(ingredient_id: ingredient.id).present?
 
-        PantryIngredient.create!(ingredient_id: ingredient.id, pantry_id: current_user.pantry.id)
+        pantry_ingredients << PantryIngredient.create!(ingredient_id: ingredient.id, pantry_id: current_user.pantry.id)
       end
-      render json: { message: "Ingredients added successfully to the Pantry." }, status: :created
+      render json: {
+          pantry_ingredient: pantry_ingredients.map do |pi|
+            { pantry: pi.pantry, ingredient: pi.ingredient }
+          end,
+          message: "Ingredients added successfully to the Pantry."
+        }, status: :created
     else
       render json: { message: "User not logged in" }, status: :not_found
     end
