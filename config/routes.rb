@@ -25,6 +25,11 @@ Rails.application.routes.draw do
       delete "", to: "pantry_ingredients#delete_ingredient_from_pantry"
     end
   end
+  resources :pantries do
+    collection do
+      get "mypantry", to: "pantries#show"
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
