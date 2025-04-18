@@ -12,7 +12,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    super
+    super do |resource|
+      if resource.persisted?
+        resource.create_pantry!
+      end
+    end
   end
 
   # GET /resource/edit
