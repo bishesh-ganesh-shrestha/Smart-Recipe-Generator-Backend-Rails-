@@ -17,8 +17,9 @@ class RecipesController < ApplicationController
   def generate_recipes
     pantry_ingredient_ids = current_user.pantry.ingredients.pluck(:id).uniq
 
-    recipes_with_match = Recipe.first(100).filter_map do |recipe|
-      recipe_ingredient_ids = recipe.ingredients.pluck(:id)
+    recipes_with_match = Recipe.includes(:ingredients).filter_map do |recipe|
+      recipe_ingredients = recipe.ingredients
+      recipe_ingredient_ids = recipe_ingredients.map(&:id)
       pantry_matches = recipe_ingredient_ids & pantry_ingredient_ids
       next if pantry_matches.empty?
 
@@ -28,8 +29,8 @@ class RecipesController < ApplicationController
 
       missing_ingredient_ids = recipe_ingredient_ids - pantry_matches
 
-      matching_ingredients = Ingredient.where(id: pantry_matches).pluck(:name)
-      missing_ingredients = Ingredient.where(id: missing_ingredient_ids).pluck(:name)
+      matching_ingredients = recipe_ingredients.select { |i| pantry_ingredient_ids.include?(i.id) }.map(&:name)
+      missing_ingredients = recipe_ingredients.select { |i| missing_ingredient_ids.include?(i.id) }.map(&:name)
 
       {
         recipe: recipe,
@@ -49,7 +50,11 @@ class RecipesController < ApplicationController
       ]
     end
 
-    render json: sorted_recipes.map do |r|
+    offset = params[:offset]&.to_i || 0
+    limit = params[:limit]&.to_i || 10
+    paginated_recipes = sorted_recipes.slice(offset, limit)
+
+    render json: paginated_recipes.map do |r|
       {
         recipe: r[:recipe],
         pantry_ingredients_used: r[:pantry_count],
