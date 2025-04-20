@@ -44,9 +44,9 @@ class RecipesController < ApplicationController
 
     sorted_recipes = recipes_with_match.sort_by do |r|
       [
-        r[:pantry_count],           # First sorts with least no. of matched ingredients
-        r[:missing_count],          # Then sorts with least no. of missing ingredients
-        r[:total_ingredients]       # Then sorts with least no. of total ingredients in the recipe
+        r[:missing_count],      # Lower missing count is prioritized
+        -r[:pantry_count],      # Higher pantry match count comes first
+        r[:total_ingredients]   # Optional: prefer simpler recipes among ties
       ]
     end
 
