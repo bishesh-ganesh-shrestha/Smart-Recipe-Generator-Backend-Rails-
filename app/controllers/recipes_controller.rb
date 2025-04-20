@@ -54,14 +54,19 @@ class RecipesController < ApplicationController
     limit = params[:limit]&.to_i || 10
     paginated_recipes = sorted_recipes.slice(offset, limit)
 
-    render json: paginated_recipes.map do |r|
-      {
-        recipe: r[:recipe],
-        pantry_ingredients_used: r[:pantry_count],
-        missing_ingredients: r[:missing_ingredients],
-        matching_ingredients: r[:matching_ingredients],
-        total_ingredients: r[:total_ingredients]
-      }
-    end
+    total_recipes_count = recipes_with_match.count
+
+    render json: {
+      total_recipes: total_recipes_count,
+      recipes: paginated_recipes.map do |r|
+        {
+          recipe: r[:recipe],
+          pantry_ingredients_used: r[:pantry_count],
+          missing_ingredients: r[:missing_ingredients],
+          matching_ingredients: r[:matching_ingredients],
+          total_ingredients: r[:total_ingredients]
+        }
+      end
+    }
   end
 end
