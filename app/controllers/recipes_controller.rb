@@ -33,7 +33,7 @@ class RecipesController < ApplicationController
       missing_ingredients = recipe_ingredients.select { |i| missing_ingredient_ids.include?(i.id) }.map(&:name)
 
       {
-        recipe: recipe,
+        recipe: recipe.recipe_content,
         pantry_count: pantry_count,
         missing_count: missing_count,
         matching_ingredients: matching_ingredients,
