@@ -17,7 +17,7 @@ class RecipesController < ApplicationController
   def generate_recipes
     pantry_ingredient_ids = current_user.pantry.ingredients.pluck(:id).uniq
 
-    recipes_with_match = Recipe.includes(:ingredients).filter_map do |recipe|
+    recipes_with_match = Recipe.includes(:ingredients, picture: { image_attachment: :blob }).filter_map do |recipe|
       recipe_ingredients = recipe.ingredients
       recipe_ingredient_ids = recipe_ingredients.map(&:id)
       pantry_matches = recipe_ingredient_ids & pantry_ingredient_ids
