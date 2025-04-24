@@ -4,6 +4,8 @@ class Recipe < ApplicationRecord
   has_one :picture, as: :imageable, dependent: :destroy
   has_many :recipe_ingredients
   has_many :ingredients, through: :recipe_ingredients
+  has_many :favorites, dependent: :destroy
+  has_many :users, through: :favorites
 
   def recipe_content
     {
