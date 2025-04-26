@@ -14,7 +14,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     super do |resource|
       if resource.persisted?
-        resource.create_pantry!
+        ActiveRecord::Base.transaction do
+          resource.create_pantry!
+          resource.create_cart!
+        end
       end
     end
   end
