@@ -31,6 +31,16 @@ Rails.application.routes.draw do
     end
   end
   resource :favorites
+  resources :carts do
+    collection do
+      get "mycart", to: "carts#show"
+    end
+  end
+  resources :cart_ingredients do
+    collection do
+      delete "", to: "cart_ingredients#delete_ingredient_from_cart"
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

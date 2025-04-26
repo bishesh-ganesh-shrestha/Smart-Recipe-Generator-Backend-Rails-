@@ -25,7 +25,7 @@ class CartIngredientsController < ApplicationController
     end
   end
 
-  def destroy
+  def delete_ingredient_from_cart
     cart_ingredient = current_user.cart.cart_ingredients.find_by(ingredient_id: params[:id])
     return render json: { message: "#{Ingredient.find(params[:id]).name} is already deleted from the cart." } if cart_ingredient.nil?
 
