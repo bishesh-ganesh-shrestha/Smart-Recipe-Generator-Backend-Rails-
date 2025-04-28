@@ -3,7 +3,7 @@
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
   before_action :configure_sign_in_params, only: [ :create ]
-  before_action :authenticate_user!, only: [:show]
+  before_action :authenticate_user!, only: [ :show ]
 
   def index
     @users = User.all
