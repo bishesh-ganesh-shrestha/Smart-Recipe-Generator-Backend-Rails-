@@ -12,7 +12,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    super
+    super do |resource|
+      if resource.persisted?
+        ActiveRecord::Base.transaction do
+          resource.create_pantry!
+          resource.create_cart!
+        end
+      end
+    end
   end
 
   # GET /resource/edit
@@ -65,11 +72,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      @token = request.env['warden-jwt_auth.token']
-      headers['Authorization'] = @token
+      @token = request.env["warden-jwt_auth.token"]
+      headers["Authorization"] = @token
 
       render json: {
-        status: { code: 200, message: 'Signed up successfully.',
+        status: { code: 200, message: "Signed up successfully.",
                   token: @token,
                   data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
       }

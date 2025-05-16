@@ -14,7 +14,33 @@ Rails.application.routes.draw do
     get "users/me", to: "users/sessions#show"
   end
 
-  get "recipes", to: "recipes#index"
+  resources :recipes do
+    collection do
+      get "generate_recipes", to: "recipes#generate_recipes"
+    end
+  end
+  resources :ingredients
+  resources :pantry_ingredients do
+    collection do
+      delete "", to: "pantry_ingredients#delete_ingredient_from_pantry"
+    end
+  end
+  resources :pantries do
+    collection do
+      get "mypantry", to: "pantries#show"
+    end
+  end
+  resource :favorites
+  resources :carts do
+    collection do
+      get "mycart", to: "carts#show"
+    end
+  end
+  resources :cart_ingredients do
+    collection do
+      delete "", to: "cart_ingredients#delete_ingredient_from_cart"
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
