@@ -1,37 +1,54 @@
 class CartIngredientsController < ApplicationController
   before_action :authenticate_user!
 
+  # def create
+  #   ingredients = []
+  #   cart_ingredients = []
+  #   ingredient_ids.each do |ingredient_id|
+  #     ingredient = Ingredient.find_by(id: ingredient_id)
+  #     next if ingredient.nil? || current_user.cart.ingredients.include?(ingredient)
+
+  #     cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
+  #     cart_ingredients << cart_ingredient
+  #     ingredients << ingredient.name if cart_ingredient
+  #   end
+
+  #   ingredient = Ingredient.find_by(name: ingredient_name)
+  #   if ingredient && !current_user.cart.ingredients.include?(ingredient)
+  #     cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
+
+  #   if !ingredients.empty?
+  #     render json: {
+  #       cart_ingredient: cart_ingredients.map do |ci|
+  #         { cart: ci.cart, ingredient: ci.ingredient }
+  #       end,
+  #       message: "#{ingredients.join(', ')} added successfully to the cart."
+  #     }, status: :created
+  #   else
+  #     render json: { message: "No ingredients were added to the cart", success: false }
+  #   end
+  # end
+
   def create
-    ingredients = []
-    cart_ingredients = []
-    ingredient_ids.each do |ingredient_id|
-      ingredient = Ingredient.find_by(id: ingredient_id)
-      next if ingredient.nil? || current_user.cart.ingredients.include?(ingredient)
+    ingredient = Ingredient.find_by(name: ingredient_name)
 
-      cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
-      cart_ingredients << cart_ingredient
-      ingredients << ingredient.name if cart_ingredient
+    if ingredient.nil?
+      return render json: { message: "Ingredient not found", success: false }, status: :not_found
     end
 
-    ingredient_names.each do |ingredient_name|
-      ingredient = Ingredient.find_by(name: ingredient_name)
-      next if ingredient.nil? || current_user.cart.ingredients.include?(ingredient)
-
-      cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
-      cart_ingredients << cart_ingredient
-      ingredients << ingredient.name if cart_ingredient
+    if current_user.cart.ingredients.include?(ingredient)
+      return render json: { message: "Ingredient already in cart", success: false }, status: :unprocessable_entity
     end
 
-    if !ingredients.empty?
-      render json: {
-        cart_ingredient: cart_ingredients.map do |ci|
-          { cart: ci.cart, ingredient: ci.ingredient }
-        end,
-        message: "#{ingredients.join(', ')} added successfully to the cart."
-      }, status: :created
-    else
-      render json: { message: "No ingredients were added to the cart", success: false }
-    end
+    cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
+
+    render json: {
+      cart_ingredient: {
+        cart: cart_ingredient.cart,
+        ingredient: cart_ingredient.ingredient
+      },
+      message: "#{ingredient.name} added successfully to the cart."
+    }, status: :created
   end
 
   def delete_ingredient_from_cart
@@ -51,11 +68,11 @@ class CartIngredientsController < ApplicationController
 
   private
 
-  def ingredient_ids
-    params[:ingredient_ids] || []
-  end
+  # def ingredient_ids
+  #   params[:ingredient_ids] || []
+  # end
 
-  def ingredient_names
-    params[:ingredient_names] || []
+  def ingredient_name
+    params[:ingredient_name]
   end
 end
