@@ -9,6 +9,7 @@ class RecipesController < ApplicationController
 
   def show
     recipe = Recipe.find_by(id: params[:id])
+    recipe.increment!(:view_count) if recipe
     render json: recipe.recipe_content
   end
 
@@ -70,5 +71,18 @@ class RecipesController < ApplicationController
         }
       end
     }
+  end
+
+  def trending_recipes
+    limit = params[:limit].presence || 10
+    offset = params[:offset].presence || 0
+
+    @recipes = Recipe.includes(:ingredients, picture: { image_attachment: :blob })
+                     .select("recipes.*, (view_count * 0.3 + favorite_count * 1.5 + cooked_count * 2.0) AS score")
+                     .order("score DESC")
+                     .limit(limit)
+                     .offset(offset)
+
+    render json: @recipes.map(&:recipe_content)
   end
 end
