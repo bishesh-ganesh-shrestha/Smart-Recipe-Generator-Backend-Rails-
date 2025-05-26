@@ -13,6 +13,15 @@ class CartIngredientsController < ApplicationController
       ingredients << ingredient.name if cart_ingredient
     end
 
+    ingredient_names.each do |ingredient_name|
+      ingredient = Ingredient.find_by(name: ingredient_name)
+      next if ingredient.nil? || current_user.cart.ingredients.include?(ingredient)
+
+      cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
+      cart_ingredients << cart_ingredient
+      ingredients << ingredient.name if cart_ingredient
+    end
+
     if !ingredients.empty?
       render json: {
         cart_ingredient: cart_ingredients.map do |ci|
@@ -43,6 +52,10 @@ class CartIngredientsController < ApplicationController
   private
 
   def ingredient_ids
-    params.require(:ingredient_ids)
+    params[:ingredient_ids] || []
+  end
+
+  def ingredient_names
+    params[:ingredient_names] || []
   end
 end
