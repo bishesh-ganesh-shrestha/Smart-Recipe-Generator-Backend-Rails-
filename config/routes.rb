@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :recipes do
     collection do
       get "generate_recipes", to: "recipes#generate_recipes"
+      post "generate_recipes", to: "recipes#generate_recipes"
     end
   end
   resources :ingredients

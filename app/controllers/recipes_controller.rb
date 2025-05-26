@@ -1,6 +1,4 @@
 class RecipesController < ApplicationController
-  before_action :authenticate_user!, only: [ :generate_recipes ]
-
   def index
     recipe_contents = []
     recipes = Recipe.includes(:picture).limit(params[:limit]).offset(params[:offset]).map do |recipe|
@@ -15,7 +13,11 @@ class RecipesController < ApplicationController
   end
 
   def generate_recipes
-    pantry_ingredient_ids = current_user.pantry.ingredients.pluck(:id).uniq
+    pantry_ingredient_ids = if current_user
+      current_user.pantry.ingredients.pluck(:id).uniq
+    else
+      Array(params[:ingredient_ids]).map(&:to_i).uniq
+    end
 
     recipes_with_match = Recipe.includes(:ingredients, picture: { image_attachment: :blob }).filter_map do |recipe|
       recipe_ingredients = recipe.ingredients
