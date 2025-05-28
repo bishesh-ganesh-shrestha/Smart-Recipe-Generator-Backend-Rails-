@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       get "generate_recipes", to: "recipes#generate_recipes"
       post "generate_recipes", to: "recipes#generate_recipes"
       get "trending_recipes", to: "recipes#trending_recipes"
+      post "add_to_cooked_recipes", to: "recipes#add_to_cooked_recipes"
     end
   end
   resources :ingredients

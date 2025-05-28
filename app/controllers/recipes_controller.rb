@@ -1,4 +1,6 @@
 class RecipesController < ApplicationController
+  before_action :authenticate_user!, only: [ :add_to_cooked_recipes ]
+
   def index
     recipe_contents = []
     recipes = Recipe.includes(:picture).limit(params[:limit]).offset(params[:offset]).map do |recipe|
@@ -84,5 +86,18 @@ class RecipesController < ApplicationController
                      .offset(offset)
 
     render json: @recipes.map(&:recipe_content)
+  end
+
+  def add_to_cooked_recipes
+    if current_user.cooked_recipe_ids.include?(params[:id].to_i)
+      return render json: { message: "This recipe is already marked as cooked for this user." }
+    end
+
+    current_user.cooked_recipe_ids << params[:id].to_i
+    if current_user.save
+      render json: { user: current_user, message: "Recipe marked as cooked successfully." }, status: :ok
+    else
+      render json: { user: current_user, message: "Failed to mark recipe as cooked." }, status: :unprocessable_entity
+    end
   end
 end
