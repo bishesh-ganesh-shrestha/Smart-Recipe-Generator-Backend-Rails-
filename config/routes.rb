@@ -22,28 +22,32 @@ Rails.application.routes.draw do
       post "add_to_cooked_recipes", to: "recipes#add_to_cooked_recipes"
     end
   end
+
   resources :ingredients
   resources :pantry_ingredients do
     collection do
       delete "", to: "pantry_ingredients#delete_ingredient_from_pantry"
     end
   end
+
   resources :pantries do
     collection do
       get "mypantry", to: "pantries#show"
     end
   end
+
   resource :favorites
+
   resources :carts do
     collection do
       get "mycart", to: "carts#show"
     end
   end
-  resources :cart_ingredients do
-    collection do
-      delete "", to: "cart_ingredients#delete_ingredient_from_cart"
-    end
-  end
+
+  # Cart ingredients routes - RESTful standard
+  resources :cart_ingredients, only: [:index, :create, :destroy]
+
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

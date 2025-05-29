@@ -29,9 +29,23 @@ class CartIngredientsController < ApplicationController
   #   end
   # end
 
+  # GET /cart_ingredients
+  def index
+    cart_ingredients = current_user.cart.cart_ingredients.includes(:ingredient)
+    render json: cart_ingredients.map { |ci| 
+      {
+        id: ci.id,
+        ingredient: {
+          id: ci.ingredient.id,
+          name: ci.ingredient.name
+        }
+      }
+    }
+  end
+
+  # POST /cart_ingredients
   def create
     ingredient = Ingredient.find_by(name: ingredient_name)
-
     if ingredient.nil?
       return render json: { message: "Ingredient not found", success: false }, status: :not_found
     end
@@ -44,33 +58,31 @@ class CartIngredientsController < ApplicationController
 
     render json: {
       cart_ingredient: {
-        cart: cart_ingredient.cart,
-        ingredient: cart_ingredient.ingredient
+        id: cart_ingredient.id,
+        ingredient: {
+          id: cart_ingredient.ingredient.id,
+          name: cart_ingredient.ingredient.name
+        }
       },
       message: "#{ingredient.name} added successfully to the cart."
     }, status: :created
   end
 
-  def delete_ingredient_from_cart
-    cart_ingredient = current_user.cart.cart_ingredients.find_by(ingredient_id: params[:id])
-    return render json: { message: "#{Ingredient.find(params[:id]).name} is already deleted from the cart." } if cart_ingredient.nil?
+  # DELETE /cart_ingredients/:id
+  def destroy
+    cart_ingredient = current_user.cart.cart_ingredients.find_by(id: params[:id])
+    if cart_ingredient.nil?
+      return render json: { message: "Ingredient not found in cart." }, status: :not_found
+    end
 
-    cart_ingredient.destroy
-    if cart_ingredient.destroyed?
-      render json: { message: "#{Ingredient.find(params[:id]).name} removed from the cart." }, status: :ok
+    if cart_ingredient.destroy
+      render json: { message: "#{cart_ingredient.ingredient.name} removed from the cart." }, status: :ok
     else
-      render json: {
-        message: "#{Ingredient.find(params[:id]).name} couldn't be removed.",
-        error: cart_ingredient.errors.full_messages
-      }
+      render json: { message: "Failed to remove ingredient.", errors: cart_ingredient.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   private
-
-  # def ingredient_ids
-  #   params[:ingredient_ids] || []
-  # end
 
   def ingredient_name
     params[:ingredient_name]
