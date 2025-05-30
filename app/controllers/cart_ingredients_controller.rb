@@ -51,7 +51,7 @@ class CartIngredientsController < ApplicationController
     end
 
     if current_user.cart.ingredients.include?(ingredient)
-      return render json: { message: "Ingredient already in cart", success: false }, status: :unprocessable_entity
+      return render json: { message: "#{ingredient.name} already in cart", success: false }, status: :unprocessable_entity
     end
 
     cart_ingredient = current_user.cart.cart_ingredients.create!(ingredient_id: ingredient.id)
