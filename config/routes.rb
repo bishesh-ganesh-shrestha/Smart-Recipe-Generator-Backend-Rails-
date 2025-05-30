@@ -20,6 +20,8 @@ Rails.application.routes.draw do
       post "generate_recipes", to: "recipes#generate_recipes"
       get "trending_recipes", to: "recipes#trending_recipes"
       post "add_to_cooked_recipes", to: "recipes#add_to_cooked_recipes"
+      get "cooked_recipes", to: "recipes#cooked_recipes"
+      get "cooked_recipe_ids", to: "recipes#cooked_recipe_ids"
     end
   end
 

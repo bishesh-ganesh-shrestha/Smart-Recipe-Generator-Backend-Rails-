@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_action :authenticate_user!, only: [ :add_to_cooked_recipes ]
+  before_action :authenticate_user!, only: [ :add_to_cooked_recipes, :cooked_recipes, :cooked_recipe_ids ]
 
   def index
     recipe_contents = []
@@ -99,5 +99,21 @@ class RecipesController < ApplicationController
     else
       render json: { user: current_user, message: "Failed to mark recipe as cooked." }, status: :unprocessable_entity
     end
+  end
+
+  def cooked_recipes
+    cooked_recipe_ids = current_user.cooked_recipe_ids || []
+    cooked_recipes = []
+    cooked_recipe_ids.each do |recipe_id|
+      recipe = Recipe.includes(:ingredients, picture: { image_attachment: :blob }).limit(params[:limit]).offset(params[:offset]).find_by(id: recipe_id)
+      if recipe
+        cooked_recipes << recipe.recipe_content
+      end
+    end
+    render json: cooked_recipes
+  end
+
+  def cooked_recipe_ids
+    render json: { cooked_recipe_ids: current_user.cooked_recipe_ids || [] }
   end
 end
