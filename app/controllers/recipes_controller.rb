@@ -95,6 +95,7 @@ class RecipesController < ApplicationController
 
     current_user.cooked_recipe_ids << params[:id].to_i
     if current_user.save
+      Recipe.find_by(id: params[:id]).increment!(:cooked_count)
       render json: { user: current_user, message: "Recipe marked as cooked successfully." }, status: :ok
     else
       render json: { user: current_user, message: "Failed to mark recipe as cooked." }, status: :unprocessable_entity
