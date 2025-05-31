@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_action :authenticate_user!, only: [ :add_to_cooked_recipes, :cooked_recipes, :cooked_recipe_ids ]
+  before_action :authenticate_user!, only: [ :add_to_cooked_recipes, :cooked_recipes, :cooked_recipe_ids, :recommended_recipes ]
 
   def index
     recipe_contents = []
@@ -116,5 +116,38 @@ class RecipesController < ApplicationController
 
   def cooked_recipe_ids
     render json: { cooked_recipe_ids: current_user.cooked_recipe_ids || [] }
+  end
+
+  def recommended_recipes
+    limit = params[:limit]&.to_i || 10
+    offset = params[:offset]&.to_i || 0
+
+    seen_recipe_ids = (current_user.cooked_recipe_ids + current_user.favorite_recipes.pluck(:id)).uniq
+    preferred_recipes = Recipe.where(id: seen_recipe_ids)
+
+    ingredient_freq = Hash.new(0)
+
+    preferred_recipes.each do |recipe|
+      (recipe.ingredients.map(&:name).compact || []).each do |ingredient|
+        ingredient_freq[ingredient.downcase] += 1
+      end
+    end
+
+    candidate_recipes = Recipe.where.not(id: seen_recipe_ids)
+                              .offset(offset)
+                              .limit(limit)
+
+    scored_recipes = candidate_recipes.map do |recipe|
+      ingredients = (recipe.ingredients.map(&:name).compact || []).map(&:downcase)
+
+      overlap_score = ingredients.sum { |ing| ingredient_freq[ing] || 0 }
+      popularity_boost = Math.log(recipe.favorite_count + recipe.cooked_count + 1)
+
+      score = overlap_score * 2 + popularity_boost
+
+      [ recipe, score ]
+    end
+
+    render json: scored_recipes.sort_by { |_, score| -score }.map { |pair| pair.first.recipe_content }, status: :ok
   end
 end

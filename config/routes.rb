@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       post "add_to_cooked_recipes", to: "recipes#add_to_cooked_recipes"
       get "cooked_recipes", to: "recipes#cooked_recipes"
       get "cooked_recipe_ids", to: "recipes#cooked_recipe_ids"
+      get "recommended_recipes", to: "recipes#recommended_recipes"
     end
   end
 
